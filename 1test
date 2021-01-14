@@ -1,0 +1,83 @@
+def shortestAlternatingPaths(self, n=3, red_edges=[[0, 1], [0, 2]], blue_edges=[[1, 0]]):
+    red_d = {}
+    blue_d = {}
+
+    for p in range(n):
+        red_d[p] = []
+        blue_d[p] = []
+
+    for i, j in red_edges:
+        red_d[i].append(j)
+
+    for i, j in blue_edges:
+        blue_d[i].append(j)
+
+    save_path = []
+    for p in range(n):
+        save_path.append([99999, []])
+    # [length, ["blue", "red"]]
+
+    save_path[0] = [0, []]
+
+    used_p = []
+    pos_p = []
+
+    for i in range(n):
+        pos_p.append(i)
+        if i in red_d[0]:
+            save_path[i][0] = 1
+            save_path[i][1].append("red")
+        if i in blue_d[0]:
+            save_path[i][0] = 1
+            save_path[i][1].append("blue")
+
+    used_p.append(0)
+    pos_p.remove(0)
+    print(save_path)
+
+    def find_next():
+        tmp = []
+        for i in range(n):
+            if i in pos_p:
+                tmp.append([i, save_path[i][0]])
+
+        tmp.sort(key=lambda P: P[1])
+        return tmp[0]
+
+    for w in range(1, n):
+        p = find_next()[0]
+        pos_p.remove(p)
+        used_p.append(p)
+
+        for i in pos_p:
+            path_0_p = save_path[p]
+            path_0_i = save_path[i]
+            if i in red_d[p]:
+                if path_0_p[0] + 1 == path_0_i[0]:
+                    if "blue" in path_0_p[1]:
+                        if "red" not in path_0_i[1]:
+                            save_path[i][1].append("red")
+                elif path_0_p[0] + 1 < path_0_i[0]:
+                    if "blue" in path_0_p[1]:
+                        save_path[i][0] = path_0_p[0] + 1
+                        save_path[i][1] = ["red"]
+            if i in blue_d[p]:
+                if path_0_p[0] + 1 == path_0_i[0]:
+                    if "red" in path_0_p[1]:
+                        if "blue" not in path_0_i[1]:
+                            save_path[i][1].append("blue")
+                elif path_0_p[0] + 1 < path_0_i[0]:
+                    if "red" in path_0_p[1]:
+                        save_path[i][0] = path_0_p[0] + 1
+                        save_path[i][1] = ["blue"]
+    out = []
+    for i in range(0, n):
+        if save_path[i][0] != 99999:
+            out.append(save_path[i][0])
+        else:
+            out.append(-1)
+    print(out)
+    print(save_path)
+    return out
+
+shortestAlternatingPaths()
